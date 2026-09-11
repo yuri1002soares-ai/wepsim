@@ -46,9 +46,24 @@ sys_prt_ch:  out  a0 0x1000
 
 
 .data
-   notes: .ascii  "  G2", "    ", "  G2", "    ", " Bb2", "  C3", "  G2", "    ", "  G2", "    ", "  F2", " F#2", "  G2", "    ", "  G2", "    ", "    "
+   notes: .ascii  
+          "  C4", "  C4", "  G4", "  G4", "  A4", "  A4", "  G4", "    ",
+          "  F4", "  F4", "  E4", "  E4", "  D4", "  D4", "  C4", "    ",
+          "  G4", "  G4", "  F4", "  F4", "  E4", "  E4", "  D4", "    ",
+          "  G4", "  G4", "  F4", "  F4", "  E4", "  E4", "  D4", "    ",
+          "  C4", "  C4", "  G4", "  G4", "  A4", "  A4", "  G4", "    ",
+          "  F4", "  F4", "  E4", "  E4", "  D4", "  D4", "  C4", "    ",
+          "   "
    eos:   .byte   0
-   times: .byte        5,      8,      8,      8,      8,      8,      8,      5,      5,      8,      8,      8,      5,      8,      8,      8,      0
+   times: .byte
+              8,     8,     8,     8,     8,     8,     8,      8,
+              8,     8,     8,     8,     8,     8,     8,      8,
+              8,     8,     8,     8,     8,     8,     8,      8,
+              8,     8,     8,     8,     8,     8,     8,      8,
+              8,     8,     8,     8,     8,     8,     8,      8,
+              8,     8,     8,     8,     8,     8,     8,      8,
+              8,     0
+   anote: .asciiz "note "
 
 .text
 main:
@@ -67,8 +82,8 @@ main:
            li  t2 2      # play + silence
            out t2 0x4000 # play + silence
 
-           li  a0 'o'
-           li  a7 11
+           li  a0 anote
+           li  a7 4
            ecall
 
            addi t1 t1 1
@@ -84,15 +99,23 @@ main:
            la  s0 notes
            la  s1 times
 
-           # fire int.1 every 300 clock cycles
+           # fire int.1 every 500 clock cycles
            li  t0 1
            out t0 0x1104
-           li  t0 300
+           li  t0 500
            out t0 0x1108
 
-           la  a0 notes
-           li  a7 4
-           ecall
+           li  a1 85
+loop3:     beq a1 x0 fin3
+           li  a0 'o'
+           li  a7 11
+           ecall   
+           li  a0 ' '
+           li  a7 11
+           ecall   
+           addi a1 a1 -1
+           beq x0 x0 loop3
+fin3:
 
            # stop firing int.1
            li  t0 0
@@ -103,4 +126,5 @@ main:
 
            # the end
            jr ra
+
 
